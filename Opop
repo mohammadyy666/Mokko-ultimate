@@ -1,0 +1,873 @@
+#!/bin/bash
+
+# 🛡️ CyberShield Pro - Advanced Penetration Testing Framework
+# 🔥 Now with Advanced IP Geolocation & Tracking Tools
+# 🌐 Complete Security Assessment Suite
+# ⚠️ FOR AUTHORIZED SECURITY TESTING ONLY
+
+# ================================
+# 🎨 ENHANCED COLOR SYSTEM
+# ================================
+RED='\033[1;91m'
+GREEN='\033[1;92m'
+YELLOW='\033[1;93m'
+BLUE='\033[1;94m'
+MAGENTA='\033[1;95m'
+CYAN='\033[1;96m'
+WHITE='\033[1;97m'
+ORANGE='\033[1;38;5;214m'
+PURPLE='\033[1;38;5;129m'
+TEAL='\033[1;38;5;85m'
+GOLD='\033[1;38;5;220m'
+CRIMSON='\033[1;38;5;196m'
+NEON='\033[1;38;5;46m'
+LIME='\033[1;38;5;118m'
+ROYAL='\033[1;38;5;63m'
+NC='\033[0m'
+
+BOLD='\033[1m'
+UNDERLINE='\033[4m'
+BLINK='\033[5m'
+
+# ================================
+# 🔧 ENHANCED GLOBAL VARIABLES
+# ================================
+VERSION="8.0.0"
+AUTHOR="CyberShield Security Team"
+SESSION_ID=""
+LOG_FILE=""
+TARGET=""
+TARGET_IP=""
+SCAN_TYPE=""
+WORDLIST_DIR="wordlists"
+TOOL_DIR="tools"
+REPORT_DIR="reports"
+LOG_DIR="logs"
+RUNNING=true
+CURRENT_MODULE=""
+GEOLOCATION_API="http://ip-api.com/json/"
+PHONE_TRACKING_API="http://apilayer.net/api/validate"
+API_KEYS_FILE="config/api_keys.conf"
+
+# ================================
+# 🏗️ ENHANCED INITIALIZATION
+# ================================
+initialize_framework() {
+    echo -e "${BLUE}[*] Initializing CyberShield Pro Framework v8.0.0...${NC}"
+    
+    # Create advanced directory structure
+    local dirs=("$WORDLIST_DIR" "$TOOL_DIR" "$REPORT_DIR" "$LOG_DIR" "output" "loot" "scans" "exploits" "geolocation" "tracking" "config")
+    for dir in "${dirs[@]}"; do
+        if [ ! -d "$dir" ]; then
+            mkdir -p "$dir"
+            echo -e "${GREEN}[+] Created directory: $dir${NC}"
+        fi
+    done
+    
+    # Generate session ID
+    SESSION_ID="session_$(date +%Y%m%d_%H%M%S)_$RANDOM"
+    LOG_FILE="$LOG_DIR/cybershield_${SESSION_ID}.log"
+    
+    # Setup enhanced logging
+    exec > >(tee -a "$LOG_FILE")
+    exec 2>&1
+    
+    # Check dependencies
+    check_enhanced_dependencies
+    load_enhanced_configuration
+    generate_enhanced_banner
+}
+
+check_enhanced_dependencies() {
+    echo -e "${BLUE}[*] Checking enhanced security tools dependencies...${NC}"
+    
+    local essential_tools=("nmap" "curl" "dig" "whois" "nikto" "sqlmap" "hydra" "john" "hashcat" "wget" "jq")
+    local enhanced_tools=("gobuster" "dirb" "wpscan" "metasploit" "aircrack-ng" "ettercap" "tshark" "masscan")
+    
+    local missing_essential=()
+    local missing_enhanced=()
+    
+    for tool in "${essential_tools[@]}"; do
+        if ! command -v "$tool" &> /dev/null; then
+            missing_essential+=("$tool")
+        fi
+    done
+    
+    for tool in "${enhanced_tools[@]}"; do
+        if ! command -v "$tool" &> /dev/null; then
+            missing_enhanced+=("$tool")
+        fi
+    done
+    
+    if [ ${#missing_essential[@]} -gt 0 ]; then
+        echo -e "${RED}[!] Missing essential tools: ${missing_essential[*]}${NC}"
+        echo -e "${YELLOW}[*] Install with: sudo apt install ${missing_essential[*]} jq${NC}"
+        return 1
+    fi
+    
+    if [ ${#missing_enhanced[@]} -gt 0 ]; then
+        echo -e "${YELLOW}[!] Missing enhanced tools: ${missing_enhanced[*]}${NC}"
+        echo -e "${CYAN}[*] Consider installing for advanced features${NC}"
+    fi
+    
+    echo -e "${GREEN}[+] All essential security tools are available${NC}"
+    
+    # Check for jq (JSON processor)
+    if ! command -v jq &> /dev/null; then
+        echo -e "${RED}[!] jq is required for enhanced features${NC}"
+        echo -e "${YELLOW}[*] Install with: sudo apt install jq${NC}"
+        return 1
+    fi
+    
+    return 0
+}
+
+load_enhanced_configuration() {
+    local config_file="cybershield.conf"
+    
+    if [ -f "$config_file" ]; then
+        source "$config_file"
+        echo -e "${GREEN}[+] Configuration loaded from $config_file${NC}"
+    else
+        # Enhanced default configuration
+        NMAP_TIMING="-T4"
+        DEFAULT_WORDLIST="$WORDLIST_DIR/rockyou.txt"
+        THREADS=50
+        TIMEOUT=10
+        GEOLOCATION_API="http://ip-api.com/json/"
+        MAXMIND_API_KEY=""
+        IP2LOCATION_API_KEY=""
+        
+        # Create enhanced config
+        cat > "$config_file" << EOF
+# CyberShield Pro Enhanced Configuration
+NMAP_TIMING="-T4"
+DEFAULT_WORDLIST="$WORDLIST_DIR/rockyou.txt"
+THREADS=50
+TIMEOUT=10
+GEOLOCATION_API="http://ip-api.com/json/"
+MAXMIND_API_KEY=""
+IP2LOCATION_API_KEY=""
+EOF
+        echo -e "${YELLOW}[+] Created enhanced configuration file${NC}"
+    fi
+    
+    # Load API keys
+    if [ -f "$API_KEYS_FILE" ]; then
+        source "$API_KEYS_FILE"
+        echo -e "${GREEN}[+] API keys loaded${NC}"
+    else
+        echo -e "${YELLOW}[!] API keys file not found. Some features may be limited.${NC}"
+    fi
+}
+
+# ================================
+# 🎨 ENHANCED BANNER SYSTEM
+# ================================
+generate_enhanced_banner() {
+    clear
+    echo -e "${CYAN}"
+    cat << "BANNER"
+ ██████╗██╗   ██╗██████╗ ███████╗███████╗██╗  ██╗██╗███████╗██╗     ██████╗ ██████╗ 
+██╔════╝╚██╗ ██╔╝██╔══██╗██╔════╝██╔════╝██║  ██║██║██╔════╝██║     ██╔══██╗██╔══██╗
+██║      ╚████╔╝ ██████╔╝█████╗  ███████╗███████║██║█████╗  ██║     ██████╔╝██████╔╝
+██║       ╚██╔╝  ██╔══██╗██╔══╝  ╚════██║██╔══██║██║██╔══╝  ██║     ██╔══██╗██╔══██╗
+╚██████╗   ██║   ██████╔╝███████╗███████║██║  ██║██║███████╗███████╗██║  ██║██║  ██║
+ ╚═════╝   ╚═╝   ╚═════╝ ╚══════╝╚══════╝╚═╝  ╚═╝╚═╝╚══════╝╚══════╝╚═╝  ╚═╝╚═╝  ╚═╝
+BANNER
+    echo -e "${PURPLE}"
+    cat << "BANNER2"
+                    ADVANCED PENETRATION TESTING & IP INTELLIGENCE
+                          NOW WITH GEOLOCATION TRACKING
+BANNER2
+    echo -e "${GOLD}                         Version: $VERSION | Author: $AUTHOR${NC}"
+    echo -e "${CYAN}================================================================================${NC}"
+}
+
+# ================================
+# 🎯 NEW: ADVANCED IP GEOLOCATION MODULE
+# ================================
+ip_geolocation_menu() {
+    while true; do
+        echo -e "${ROYAL}"
+        cat << "GEOLOCATION_MENU"
+╔════════════════════════════════════════════════════════════════════════════════════╗
+║                          🌍 ADVANCED IP GEOLOCATION                               ║
+╠════════════════════════════════════════════════════════════════════════════════════╣
+║  [1] 📍 IP to Physical Address Lookup                                            ║
+║  [2] 🌐 Website to IP Resolution                                                  ║
+║  [3] 📱 Phone Link IP Tracking                                                    ║
+║  [4] 🗺️  Advanced Geolocation Mapping                                             ║
+║  [5] 📡 Mobile Device IP Detection                                               ║
+║  [6] 🔍 Reverse IP Lookup                                                        ║
+║  [7] 📊 IP Intelligence Report                                                   ║
+║  [8] ↩️  Back to Main Menu                                                        ║
+╚════════════════════════════════════════════════════════════════════════════════════╝
+GEOLOCATION_MENU
+        echo -e "${NC}"
+        
+        read -p "Select option [1-8]: " choice
+        case $choice in
+            1) ip_to_address_lookup ;;
+            2) website_to_ip_resolution ;;
+            3) phone_link_ip_tracking ;;
+            4) advanced_geolocation_mapping ;;
+            5) mobile_device_ip_detection ;;
+            6) reverse_ip_lookup ;;
+            7) ip_intelligence_report ;;
+            8) return ;;
+            *) echo -e "${RED}[!] Invalid option${NC}"; sleep 1 ;;
+        esac
+    done
+}
+
+ip_to_address_lookup() {
+    echo -e "${BLUE}[*] Starting IP to Physical Address Lookup...${NC}"
+    
+    read -p "Enter IP address: " ip_address
+    
+    if [[ -z "$ip_address" ]]; then
+        echo -e "${RED}[!] IP address cannot be empty${NC}"
+        return
+    fi
+    
+    # Validate IP format
+    if ! [[ $ip_address =~ ^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+        echo -e "${RED}[!] Invalid IP address format${NC}"
+        return
+    fi
+    
+    local output_file="geolocation/ip_location_${ip_address}_$(date +%Y%m%d_%H%M%S).txt"
+    
+    echo -e "${CYAN}[*] Gathering geolocation data for: $ip_address${NC}"
+    
+    # Using ip-api.com (free service)
+    local geolocation_data=$(curl -s "http://ip-api.com/json/$ip_address")
+    
+    if [ $? -eq 0 ] && [ -n "$geolocation_data" ]; then
+        echo -e "${GREEN}[+] Geolocation Data:${NC}" | tee "$output_file"
+        echo "==========================================" | tee -a "$output_file"
+        
+        # Parse JSON response
+        local status=$(echo "$geolocation_data" | jq -r '.status')
+        
+        if [ "$status" == "success" ]; then
+            local country=$(echo "$geolocation_data" | jq -r '.country')
+            local countryCode=$(echo "$geolocation_data" | jq -r '.countryCode')
+            local region=$(echo "$geolocation_data" | jq -r '.regionName')
+            local city=$(echo "$geolocation_data" | jq -r '.city')
+            local zip=$(echo "$geolocation_data" | jq -r '.zip')
+            local lat=$(echo "$geolocation_data" | jq -r '.lat')
+            local lon=$(echo "$geolocation_data" | jq -r '.lon')
+            local timezone=$(echo "$geolocation_data" | jq -r '.timezone')
+            local isp=$(echo "$geolocation_data" | jq -r '.isp')
+            local org=$(echo "$geolocation_data" | jq -r '.org')
+            local as=$(echo "$geolocation_data" | jq -r '.as')
+            
+            echo -e "📍 ${GREEN}Physical Address:${NC}" | tee -a "$output_file"
+            echo -e "   Country: $country ($countryCode)" | tee -a "$output_file"
+            echo -e "   Region: $region" | tee -a "$output_file"
+            echo -e "   City: $city" | tee -a "$output_file"
+            echo -e "   ZIP: $zip" | tee -a "$output_file"
+            echo -e "   Coordinates: $lat, $lon" | tee -a "$output_file"
+            echo -e "   Timezone: $timezone" | tee -a "$output_file"
+            echo "" | tee -a "$output_file"
+            
+            echo -e "🌐 ${GREEN}Network Information:${NC}" | tee -a "$output_file"
+            echo -e "   ISP: $isp" | tee -a "$output_file"
+            echo -e "   Organization: $org" | tee -a "$output_file"
+            echo -e "   AS: $as" | tee -a "$output_file"
+            echo "" | tee -a "$output_file"
+            
+            # Generate Google Maps link
+            echo -e "🗺️ ${GREEN}Map Location:${NC}" | tee -a "$output_file"
+            echo -e "   https://maps.google.com/?q=$lat,$lon" | tee -a "$output_file"
+            
+            # Additional WHOIS information
+            echo -e "\n🔍 ${GREEN}WHOIS Information:${NC}" | tee -a "$output_file"
+            whois "$ip_address" | head -20 | tee -a "$output_file"
+            
+        else
+            echo -e "${RED}[-] Failed to retrieve geolocation data${NC}" | tee -a "$output_file"
+        fi
+    else
+        echo -e "${RED}[-] Could not connect to geolocation service${NC}"
+    fi
+    
+    echo -e "${GREEN}[+] Geolocation report saved: $output_file${NC}"
+}
+
+website_to_ip_resolution() {
+    echo -e "${BLUE}[*] Starting Website to IP Resolution...${NC}"
+    
+    read -p "Enter website URL (e.g., example.com): " website_url
+    
+    if [[ -z "$website_url" ]]; then
+        echo -e "${RED}[!] Website URL cannot be empty${NC}"
+        return
+    fi
+    
+    # Remove protocol if present
+    website_url=$(echo "$website_url" | sed -e 's|^[^/]*//||' -e 's|/.*$||')
+    
+    local output_file="geolocation/website_ip_${website_url}_$(date +%Y%m%d_%H%M%S).txt"
+    
+    echo -e "${CYAN}[*] Resolving IP addresses for: $website_url${NC}"
+    
+    # Get A records
+    echo -e "${GREEN}[+] DNS A Records:${NC}" | tee "$output_file"
+    echo "==========================================" | tee -a "$output_file"
+    
+    local ip_addresses=($(dig +short "$website_url" A))
+    
+    if [ ${#ip_addresses[@]} -eq 0 ]; then
+        echo -e "${RED}[-] No IP addresses found for $website_url${NC}" | tee -a "$output_file"
+        return
+    fi
+    
+    for ip in "${ip_addresses[@]}"; do
+        echo -e "🌐 ${GREEN}IP Address: $ip${NC}" | tee -a "$output_file"
+        
+        # Get geolocation for each IP
+        local geo_data=$(curl -s "http://ip-api.com/json/$ip")
+        local status=$(echo "$geo_data" | jq -r '.status')
+        
+        if [ "$status" == "success" ]; then
+            local country=$(echo "$geo_data" | jq -r '.country')
+            local city=$(echo "$geo_data" | jq -r '.city')
+            local isp=$(echo "$geo_data" | jq -r '.isp')
+            
+            echo -e "   📍 Location: $city, $country" | tee -a "$output_file"
+            echo -e "   🏢 ISP: $isp" | tee -a "$output_file"
+        fi
+        
+        # Check if IP is a CDN
+        check_cdn "$ip" | tee -a "$output_file"
+        
+        echo "" | tee -a "$output_file"
+    done
+    
+    # Get AAAA records (IPv6)
+    echo -e "${GREEN}[+] DNS AAAA Records (IPv6):${NC}" | tee -a "$output_file"
+    echo "==========================================" | tee -a "$output_file"
+    
+    local ipv6_addresses=($(dig +short "$website_url" AAAA))
+    for ipv6 in "${ipv6_addresses[@]}"; do
+        echo -e "🌐 ${GREEN}IPv6: $ipv6${NC}" | tee -a "$output_file"
+    done
+    
+    # Get MX records
+    echo -e "\n${GREEN}[+] Mail Servers (MX Records):${NC}" | tee -a "$output_file"
+    echo "==========================================" | tee -a "$output_file"
+    
+    dig +short "$website_url" MX | sort -n | while read priority server; do
+        echo -e "📧 ${GREEN}Priority: $priority - $server${NC}" | tee -a "$output_file"
+    done
+    
+    echo -e "${GREEN}[+] Website IP resolution completed: $output_file${NC}"
+}
+
+check_cdn() {
+    local ip="$1"
+    
+    # Common CDN IP ranges (simplified check)
+    local cdn_patterns=(
+        "cloudflare"
+        "akamai"
+        "fastly"
+        "amazonaws"
+        "googleusercontent"
+        "azure"
+        "incapdns"
+    )
+    
+    local whois_data=$(whois "$ip" 2>/dev/null | tr '[:upper:]' '[:lower:]')
+    
+    for cdn in "${cdn_patterns[@]}"; do
+        if echo "$whois_data" | grep -q "$cdn"; then
+            echo -e "   ☁️  CDN Detected: ${GREEN}$cdn${NC}"
+            return
+        fi
+    done
+    
+    echo -e "   ☁️  CDN: ${YELLOW}Not detected${NC}"
+}
+
+phone_link_ip_tracking() {
+    echo -e "${BLUE}[*] Starting Phone Link IP Tracking Analysis...${NC}"
+    
+    echo -e "${YELLOW}[!] This tool analyzes potential IP tracking in phone links${NC}"
+    echo -e "${YELLOW}[!] For educational and security testing purposes only${NC}"
+    
+    read -p "Enter phone tracking link or short URL: " tracking_link
+    
+    if [[ -z "$tracking_link" ]]; then
+        echo -e "${RED}[!] Tracking link cannot be empty${NC}"
+        return
+    fi
+    
+    local output_file="tracking/phone_tracking_$(date +%Y%m%d_%H%M%S).txt"
+    
+    echo -e "${CYAN}[*] Analyzing tracking link: $tracking_link${NC}"
+    
+    # Extract domain from link
+    local domain=$(echo "$tracking_link" | sed -e 's|^[^/]*//||' -e 's|/.*$||')
+    
+    echo -e "${GREEN}[+] Tracking Link Analysis:${NC}" | tee "$output_file"
+    echo "==========================================" | tee -a "$output_file"
+    echo -e "🔗 ${GREEN}Original Link: $tracking_link${NC}" | tee -a "$output_file"
+    echo -e "🌐 ${GREEN}Domain: $domain${NC}" | tee -a "$output_file"
+    
+    # Resolve domain to IP
+    local ip_address=$(dig +short "$domain" | head -1)
+    
+    if [ -n "$ip_address" ]; then
+        echo -e "📡 ${GREEN}Server IP: $ip_address${NC}" | tee -a "$output_file"
+        
+        # Get geolocation
+        local geo_data=$(curl -s "http://ip-api.com/json/$ip_address")
+        local status=$(echo "$geo_data" | jq -r '.status')
+        
+        if [ "$status" == "success" ]; then
+            local country=$(echo "$geo_data" | jq -r '.country')
+            local city=$(echo "$geo_data" | jq -r '.city')
+            local isp=$(echo "$geo_data" | jq -r '.isp')
+            
+            echo -e "📍 ${GREEN}Server Location: $city, $country${NC}" | tee -a "$output_file"
+            echo -e "🏢 ${GREEN}ISP: $isp${NC}" | tee -a "$output_file"
+        fi
+    fi
+    
+    # Analyze link structure for tracking parameters
+    echo -e "\n${GREEN}[+] Tracking Parameter Analysis:${NC}" | tee -a "$output_file"
+    echo "==========================================" | tee -a "$output_file"
+    
+    local tracking_params=("utm_" "tid" "cid" "pid" "ref" "source" "campaign" "medium")
+    for param in "${tracking_params[@]}"; do
+        if echo "$tracking_link" | grep -q "$param"; then
+            echo -e "🎯 ${RED}Tracking parameter detected: $param${NC}" | tee -a "$output_file"
+        fi
+    done
+    
+    # Check if it's a short URL
+    if [[ "$domain" =~ (bit\.ly|goo\.gl|tinyurl|t\.co|ow\.ly) ]]; then
+        echo -e "🔗 ${RED}Short URL detected - Potential tracking link${NC}" | tee -a "$output_file"
+        
+        # Try to expand short URL
+        echo -e "\n${GREEN}[+] Expanding Short URL:${NC}" | tee -a "$output_file"
+        local expanded_url=$(curl -s -I "$tracking_link" | grep -i "location:" | cut -d' ' -f2 | tr -d '\r')
+        if [ -n "$expanded_url" ]; then
+            echo -e "🔍 ${GREEN}Expanded URL: $expanded_url${NC}" | tee -a "$output_file"
+        fi
+    fi
+    
+    # Security recommendations
+    echo -e "\n${GREEN}[+] Security Recommendations:${NC}" | tee -a "$output_file"
+    echo "==========================================" | tee -a "$output_file"
+    echo -e "🛡️  ${YELLOW}1. Use VPN when clicking unknown links${NC}" | tee -a "$output_file"
+    echo -e "🛡️  ${YELLOW}2. Check link reputation before clicking${NC}" | tee -a "$output_file"
+    echo -e "🛡️  ${YELLOW}3. Use privacy-focused browsers${NC}" | tee -a "$output_file"
+    echo -e "🛡️  ${YELLOW}4. Disable automatic link previews${NC}" | tee -a "$output_file"
+    
+    echo -e "${GREEN}[+] Phone link tracking analysis completed: $output_file${NC}"
+}
+
+advanced_geolocation_mapping() {
+    echo -e "${BLUE}[*] Starting Advanced Geolocation Mapping...${NC}"
+    
+    read -p "Enter IP address or domain: " target
+    
+    if [[ -z "$target" ]]; then
+        echo -e "${RED}[!] Target cannot be empty${NC}"
+        return
+    fi
+    
+    local output_file="geolocation/advanced_mapping_${target}_$(date +%Y%m%d_%H%M%S).html"
+    
+    echo -e "${CYAN}[*] Creating advanced geolocation map for: $target${NC}"
+    
+    # Get IP if domain is provided
+    if [[ ! $target =~ ^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+        target=$(dig +short "$target" | head -1)
+        echo -e "${GREEN}[+] Resolved to IP: $target${NC}"
+    fi
+    
+    # Get detailed geolocation
+    local geo_data=$(curl -s "http://ip-api.com/json/$target")
+    
+    if [ $? -eq 0 ] && [ -n "$geo_data" ]; then
+        local status=$(echo "$geo_data" | jq -r '.status')
+        
+        if [ "$status" == "success" ]; then
+            local lat=$(echo "$geo_data" | jq -r '.lat')
+            local lon=$(echo "$geo_data" | jq -r '.lon')
+            local country=$(echo "$geo_data" | jq -r '.country')
+            local city=$(echo "$geo_data" | jq -r '.city')
+            local isp=$(echo "$geo_data" | jq -r '.isp')
+            
+            # Create interactive HTML map
+            cat > "$output_file" << EOF
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Advanced Geolocation Map - $target</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <style>
+        body { margin: 0; padding: 0; }
+        #map { height: 100vh; width: 100%; }
+        .info { padding: 10px; background: white; border-radius: 5px; }
+    </style>
+</head>
+<body>
+    <div id="map"></div>
+    
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <script>
+        var map = L.map('map').setView([$lat, $lon], 13);
+        
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap contributors'
+        }).addTo(map);
+        
+        var marker = L.marker([$lat, $lon]).addTo(map)
+            .bindPopup(`
+                <div class="info">
+                    <h3>IP Location: $target</h3>
+                    <p><strong>Location:</strong> $city, $country</p>
+                    <p><strong>ISP:</strong> $isp</p>
+                    <p><strong>Coordinates:</strong> $lat, $lon</p>
+                    <p><strong>Date:</strong> $(date)</p>
+                </div>
+            `)
+            .openPopup();
+        
+        // Add circle around location
+        L.circle([$lat, $lon], {
+            color: 'red',
+            fillColor: '#f03',
+            fillOpacity: 0.1,
+            radius: 1000
+        }).addTo(map);
+    </script>
+</body>
+</html>
+EOF
+            echo -e "${GREEN}[+] Interactive map created: $output_file${NC}"
+            echo -e "${CYAN}[*] Open this file in a web browser to view the map${NC}"
+            
+            # Also create text report
+            local text_report="${output_file%.html}.txt"
+            echo -e "Advanced Geolocation Report" > "$text_report"
+            echo -e "Generated: $(date)" >> "$text_report"
+            echo -e "Target: $target" >> "$text_report"
+            echo -e "Coordinates: $lat, $lon" >> "$text_report"
+            echo -e "Location: $city, $country" >> "$text_report"
+            echo -e "ISP: $isp" >> "$text_report"
+            echo -e "Map File: $output_file" >> "$text_report"
+            
+        else
+            echo -e "${RED}[-] Failed to get geolocation data${NC}"
+        fi
+    else
+        echo -e "${RED}[-] Could not connect to geolocation service${NC}"
+    fi
+}
+
+# ================================
+# 🎯 ENHANCED MAIN MENU WITH NEW MODULES
+# ================================
+show_enhanced_main_menu() {
+    while true; do
+        generate_enhanced_banner
+        echo -e "${CYAN}"
+        cat << "ENHANCED_MENU"
+╔════════════════════════════════════════════════════════════════════════════════════╗
+║                          🛡️ CYBERSHIELD PRO ENHANCED MENU                        ║
+╠════════════════════════════════════════════════════════════════════════════════════╣
+║  [1] 🔍 Information Gathering       - Comprehensive reconnaissance                ║
+║  [2] 🎯 Vulnerability Assessment    - Security vulnerability scanning             ║
+║  [3] 🎣 Phishing Simulation         - Educational phishing tests                  ║
+║  [4] 🔐 Password Security           - Password strength & cracking tools         ║
+║  [5] 🌐 Network Attack Simulation   - Network security testing                   ║
+║  [6] 🛠️  Web Application Testing    - Web security assessment                    ║
+║  [7] 🌍 Advanced IP Geolocation     - IP tracking & location services            ║
+║  [8] 📊 Reporting & Analytics       - Generate security reports                  ║
+║  [9] ⚙️  Configuration              - Tool settings & management                 ║
+║  [0] 🚪 Exit                        - Exit CyberShield Pro                       ║
+╚════════════════════════════════════════════════════════════════════════════════════╝
+ENHANCED_MENU
+        echo -e "${NC}"
+        
+        read -p "Select option [0-9]: " choice
+        case $choice in
+            1) information_gathering_menu ;;
+            2) vulnerability_assessment_menu ;;
+            3) phishing_simulation_menu ;;
+            4) password_security_menu ;;
+            5) network_attack_menu ;;
+            6) web_app_testing_menu ;;
+            7) ip_geolocation_menu ;;
+            8) reporting_menu ;;
+            9) configuration_menu ;;
+            0) exit_tool ;;
+            *) echo -e "${RED}[!] Invalid option${NC}"; sleep 1 ;;
+        esac
+    done
+}
+
+# ================================
+# 🆕 NEW GEOLOCATION FUNCTIONS
+# ================================
+mobile_device_ip_detection() {
+    echo -e "${BLUE}[*] Starting Mobile Device IP Detection...${NC}"
+    
+    echo -e "${YELLOW}[!] This tool helps detect IP information from mobile connections${NC}"
+    
+    read -p "Enter mobile IP address or 'current' for your IP: " mobile_ip
+    
+    if [ "$mobile_ip" == "current" ]; then
+        mobile_ip=$(curl -s https://api.ipify.org)
+        echo -e "${GREEN}[+] Your current IP: $mobile_ip${NC}"
+    fi
+    
+    if [[ -z "$mobile_ip" ]]; then
+        echo -e "${RED}[!] IP address cannot be empty${NC}"
+        return
+    fi
+    
+    local output_file="tracking/mobile_ip_${mobile_ip}_$(date +%Y%m%d_%H%M%S).txt"
+    
+    echo -e "${CYAN}[*] Analyzing mobile IP: $mobile_ip${NC}"
+    
+    # Enhanced geolocation lookup
+    local geo_data=$(curl -s "http://ip-api.com/json/$mobile_ip")
+    
+    echo -e "${GREEN}[+] Mobile IP Analysis:${NC}" | tee "$output_file"
+    echo "==========================================" | tee -a "$output_file"
+    
+    if echo "$geo_data" | jq -r '.status' | grep -q "success"; then
+        local is_mobile=false
+        local isp=$(echo "$geo_data" | jq -r '.isp')
+        local org=$(echo "$geo_data" | jq -r '.org')
+        local as=$(echo "$geo_data" | jq -r '.as')
+        
+        # Check if ISP indicates mobile carrier
+        local mobile_indicators=("vodafone" "verizon" "att" "t-mobile" "mobile" "cellular" "wireless")
+        for indicator in "${mobile_indicators[@]}"; do
+            if echo "$isp" | grep -qi "$indicator"; then
+                is_mobile=true
+                break
+            fi
+        done
+        
+        echo -e "📱 ${GREEN}IP Address: $mobile_ip${NC}" | tee -a "$output_file"
+        echo -e "🏢 ${GREEN}ISP: $isp${NC}" | tee -a "$output_file"
+        echo -e "🏛️  ${GREEN}Organization: $org${NC}" | tee -a "$output_file"
+        echo -e "🔗 ${GREEN}AS: $as${NC}" | tee -a "$output_file"
+        
+        if [ "$is_mobile" = true ]; then
+            echo -e "📶 ${GREEN}Device Type: ${YELLOW}Mobile Network${NC}" | tee -a "$output_file"
+        else
+            echo -e "💻 ${GREEN}Device Type: ${BLUE}Fixed Line/Broadband${NC}" | tee -a "$output_file"
+        fi
+        
+        # Location details
+        local country=$(echo "$geo_data" | jq -r '.country')
+        local city=$(echo "$geo_data" | jq -r '.city')
+        local lat=$(echo "$geo_data" | jq -r '.lat')
+        local lon=$(echo "$geo_data" | jq -r '.lon')
+        
+        echo -e "📍 ${GREEN}Location: $city, $country${NC}" | tee -a "$output_file"
+        echo -e "🎯 ${GREEN}Coordinates: $lat, $lon${NC}" | tee -a "$output_file"
+        echo -e "🗺️  ${GREEN}Map: https://maps.google.com/?q=$lat,$lon${NC}" | tee -a "$output_file"
+        
+    else
+        echo -e "${RED}[-] Could not retrieve geolocation data${NC}" | tee -a "$output_file"
+    fi
+    
+    echo -e "${GREEN}[+] Mobile IP analysis completed: $output_file${NC}"
+}
+
+reverse_ip_lookup() {
+    echo -e "${BLUE}[*] Starting Reverse IP Lookup...${NC}"
+    
+    read -p "Enter IP address: " ip_address
+    
+    if [[ -z "$ip_address" ]]; then
+        echo -e "${RED}[!] IP address cannot be empty${NC}"
+        return
+    fi
+    
+    local output_file="geolocation/reverse_ip_${ip_address}_$(date +%Y%m%d_%H%M%S).txt"
+    
+    echo -e "${CYAN}[*] Performing reverse IP lookup for: $ip_address${NC}"
+    
+    echo -e "${GREEN}[+] Reverse IP Lookup Results:${NC}" | tee "$output_file"
+    echo "==========================================" | tee -a "$output_file"
+    
+    # Try to get PTR record
+    local ptr_record=$(dig +short -x "$ip_address")
+    
+    if [ -n "$ptr_record" ]; then
+        echo -e "🔁 ${GREEN}PTR Record: $ptr_record${NC}" | tee -a "$output_file"
+    else
+        echo -e "🔁 ${YELLOW}No PTR record found${NC}" | tee -a "$output_file"
+    fi
+    
+    # Get WHOIS information
+    echo -e "\n${GREEN}[+] WHOIS Information:${NC}" | tee -a "$output_file"
+    whois "$ip_address" | grep -E "(inetnum|netname|descr|country|organization)" | head -10 | tee -a "$output_file"
+    
+    # Check if IP is in any blacklists
+    echo -e "\n${GREEN}[+] Blacklist Check:${NC}" | tee -a "$output_file"
+    check_ip_blacklist "$ip_address" | tee -a "$output_file"
+    
+    echo -e "${GREEN}[+] Reverse IP lookup completed: $output_file${NC}"
+}
+
+check_ip_blacklist() {
+    local ip="$1"
+    local blacklists=(
+        "zen.spamhaus.org"
+        "bl.spamcop.net"
+        "b.barracudacentral.org"
+    )
+    
+    for bl in "${blacklists[@]}"; do
+        local result=$(dig +short "$ip.$bl")
+        if [ -n "$result" ]; then
+            echo -e "❌ ${RED}Listed in $bl: $result${NC}"
+        else
+            echo -e "✅ ${GREEN}Not listed in $bl${NC}"
+        fi
+    done
+}
+
+ip_intelligence_report() {
+    echo -e "${BLUE}[*] Generating Comprehensive IP Intelligence Report...${NC}"
+    
+    read -p "Enter IP address: " ip_address
+    
+    if [[ -z "$ip_address" ]]; then
+        echo -e "${RED}[!] IP address cannot be empty${NC}"
+        return
+    fi
+    
+    local output_file="reports/ip_intelligence_${ip_address}_$(date +%Y%m%d_%H%M%S).html"
+    
+    echo -e "${CYAN}[*] Creating comprehensive IP report for: $ip_address${NC}"
+    
+    # Gather all intelligence data
+    local geo_data=$(curl -s "http://ip-api.com/json/$ip_address")
+    local whois_data=$(whois "$ip_address" 2>/dev/null)
+    local ptr_record=$(dig +short -x "$ip_address")
+    
+    # Create comprehensive HTML report
+    cat > "$output_file" << EOF
+<!DOCTYPE html>
+<html>
+<head>
+    <title>IP Intelligence Report - $ip_address</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .header { background: #2c3e50; color: white; padding: 20px; border-radius: 5px; }
+        .section { margin: 20px 0; padding: 15px; border-left: 4px solid #3498db; background: #f8f9fa; }
+        .critical { border-left-color: #e74c3c; }
+        .warning { border-left-color: #f39c12; }
+        .info { border-left-color: #3498db; }
+        .success { border-left-color: #2ecc71; }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>IP Intelligence Report</h1>
+        <p>Target: $ip_address | Generated: $(date) | Session: $SESSION_ID</p>
+    </div>
+    
+    <div class="section info">
+        <h2>🌍 Geolocation Information</h2>
+        <div id="geolocation-data">
+            <p>Loading geolocation data...</p>
+        </div>
+    </div>
+    
+    <div class="section warning">
+        <h2>🔍 Network Information</h2>
+        <p><strong>PTR Record:</strong> $ptr_record</p>
+        <div id="network-data">
+            <!-- Network information will be populated -->
+        </div>
+    </div>
+    
+    <div class="section critical">
+        <h2>🛡️ Security Assessment</h2>
+        <div id="security-data">
+            <!-- Security assessment will be populated -->
+        </div>
+    </div>
+    
+    <div class="section success">
+        <h2>📊 Summary & Recommendations</h2>
+        <div id="recommendations">
+            <!-- Recommendations will be populated -->
+        </div>
+    </div>
+
+    <script>
+        // Geolocation data
+        var geoData = $geo_data;
+        if(geoData.status === 'success') {
+            document.getElementById('geolocation-data').innerHTML = `
+                <p><strong>Country:</strong> \${geoData.country} (\${geoData.countryCode})</p>
+                <p><strong>Region:</strong> \${geoData.regionName}</p>
+                <p><strong>City:</strong> \${geoData.city}</p>
+                <p><strong>ISP:</strong> \${geoData.isp}</p>
+                <p><strong>Organization:</strong> \${geoData.org}</p>
+                <p><strong>Coordinates:</strong> \${geoData.lat}, \${geoData.lon}</p>
+                <p><strong>Timezone:</strong> \${geoData.timezone}</p>
+            `;
+        }
+
+        // Add more JavaScript for dynamic content...
+    </script>
+</body>
+</html>
+EOF
+
+    echo -e "${GREEN}[+] Comprehensive IP intelligence report generated: $output_file${NC}"
+    
+    # Also create text summary
+    local text_summary="${output_file%.html}.txt"
+    echo -e "IP Intelligence Summary" > "$text_summary"
+    echo -e "======================" >> "$text_summary"
+    echo -e "IP: $ip_address" >> "$text_summary"
+    echo -e "Report: $output_file" >> "$text_summary"
+    echo -e "Generated: $(date)" >> "$text_summary"
+    
+    echo -e "${CYAN}[*] Text summary saved: $text_summary${NC}"
+}
+
+# ================================
+# 🚀 ENHANCED MAIN EXECUTION
+# ================================
+main() {
+    # Show legal warning first
+    show_legal_warning
+    
+    # Initialize enhanced framework
+    initialize_framework
+    
+    # Enhanced main program loop
+    show_enhanced_main_menu
+}
+
+# Enhanced signal handlers
+trap 'echo -e "\n${YELLOW}[!] Interrupted by user${NC}"; exit_tool' INT
+trap 'echo -e "\n${RED}[!] Script terminated${NC}"; exit 1' TERM
+
+# Start the enhanced framework
+if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
+    main "$@"
+fi
